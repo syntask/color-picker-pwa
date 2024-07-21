@@ -23,8 +23,6 @@ body {
     width: 100vw;
 	margin: 0;
     padding: 0px;
-    position: fixed;
-    touch-action: none;
 }
 
 .color {
@@ -44,30 +42,16 @@ body {
     text-align: left;
 }
 
-#content-area{
+.content-area{
 	display: flex;
     flex-direction: column;
     height: 100%;
 }
 
-#top-margin{
-    margin-top: calc(0px-var(--padding-top));
-    height: var(--padding-top);
-    position: absolute;
-    background-color: #FF0000;
-}
-
-#bottom-margin{
-    margin-bottom: calc(0px-var(--padding-bottom));
-    height: var(--padding-bottom);
-    position: absolute;
-    background-color: #0000FF;
-}
-
 </style>
 </head>
 <body>
-<div id="content-area">
+<div class="content-area">
 <div class="color">#cccc00</div>
 <div class="color">#00cccc</div>
 <div class="color">#cc00cc</div>
@@ -76,12 +60,6 @@ body {
 <script>
 const root = document.documentElement; 
 var colors = document.querySelectorAll('.color');
-
-const firstColor = colors[0].textContent;
-//document.getElementById('top-margin').style.backgroundColor = firstColor;
-const lastColor = colors[colors.length - 1].textContent;
-//document.getElementById('bottom-margin').style.backgroundColor = lastColor;
-
 colors.forEach((color) => {
     color.style.setProperty('cursor', 'pointer');
     color.style.setProperty('background-color', color.textContent);
