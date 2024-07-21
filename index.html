@@ -11,13 +11,25 @@
 }
 body {
     background-color: var(--background-color);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
 }
+
+button {
+	font-size: 2em;
+}
+
 </style>
 </head>
 <body>
+<div class="content-area">
 <button id="red">Red</button>
 <button id="green">Green</button>
 <button id="blue">Blue</button>
+</div>
+
 <script>
 const root = document.documentElement; 
 const red = document.getElementById('red');
