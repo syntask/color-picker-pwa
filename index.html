@@ -38,8 +38,9 @@ body {
     font-family: monospace;
     font-size: 2em;
     font-weight: bold;
+    line-height: 1;
     flex-grow: 1;
-    transition: flex-grow 0.5s;
+    transition: flex-grow .5s, padding-top .5s, padding-bottom .25s, line-height .125s;
     text-align: left;
 }
 
@@ -57,12 +58,10 @@ body {
 
 #top-margin{
     height: var(--padding-top);
-    background-color: red;
 }
 
 #bottom-margin{
     height: var(--padding-bottom);
-    background-color: blue;
 }
 
 #add-color-button{
@@ -87,7 +86,6 @@ body {
     <div id="top-margin"></div>
     <div id="color-list">
         <div class="color">#00b43d</div>
-        <div class="color">#333333</div>
     </div>
     <div id="bottom-margin"></div>
     <button id="add-color-button">Add color</button>
@@ -95,27 +93,16 @@ body {
 
 <script>
 const root = document.documentElement; 
-var colors = document.querySelectorAll('.color');
-
-const firstColor = colors[0];
-const topMargin = document.getElementById('top-margin');
-//topMargin.style.backgroundColor = firstColor.textContent;
-
-const lastColor = colors[colors.length - 1];
-const bottomMargin = document.getElementById('bottom-margin');
-//bottomMargin.style.backgroundColor = lastColor.textContent;
-
+let colors
+let lastColor
 const addColorButton = document.getElementById('add-color-button');
-addColorButton.addEventListener('click', (event) => {
-    const newColor = document.createElement('div');
-    newColor.classList.add('color');
-    newColor.textContent = '#' + Math.floor(Math.random()*16777215).toString(16);
-    lastColor.insertAdjacentElement('afterend', newColor);
-    updateColors();
-});
 
 function updateColors() {
     colors = document.querySelectorAll('.color');
+    firstColor = colors[0];
+    lastColor = colors[colors.length - 1];
+    document.getElementById('top-margin').style.backgroundColor = firstColor.textContent;
+    document.getElementById('bottom-margin').style.backgroundColor = lastColor.textContent;
     colors.forEach((color) => {
         color.style.setProperty('background-color', color.textContent);
         color.addEventListener('click', (event) => {
@@ -125,6 +112,25 @@ function updateColors() {
 }
 
 updateColors();
+
+addColorButton.addEventListener('click', (event) => {
+    const newColor = document.createElement('div');
+    newColor.classList.add('color');
+    newColor.textContent = '#' + Math.floor(Math.random()*16777215).toString(16);
+    lastColor.insertAdjacentElement('afterend', newColor);
+    newColor.style.setProperty('flex-grow', '0');
+    newColor.style.setProperty('overflow', 'hidden');
+    newColor.style.setProperty('padding-top', '0');
+    newColor.style.setProperty('padding-bottom', '0');
+    newColor.style.setProperty('line-height', '0');
+    setTimeout(() => {
+        newColor.style.setProperty('line-height', '');
+        newColor.style.setProperty('padding-top', '');
+        newColor.style.setProperty('padding-bottom', '');
+        newColor.style.setProperty('flex-grow', '');
+    }, 0);
+    updateColors();
+});
 </script>
 </body>
 </html>
