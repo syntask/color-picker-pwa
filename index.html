@@ -51,10 +51,12 @@ body {
 
 #top-margin{
     height: var(--padding-top);
+    background-color: red;
 }
 
 #bottom-margin{
     height: var(--padding-bottom);
+    background-color: blue;
 }
 
 #add-color-button{
@@ -88,11 +90,11 @@ var colors = document.querySelectorAll('.color');
 
 const firstColor = colors[0];
 const topMargin = document.getElementById('top-margin');
-topMargin.style.backgroundColor = firstColor.textContent;
+//topMargin.style.backgroundColor = firstColor.textContent;
 
 const lastColor = colors[colors.length - 1];
 const bottomMargin = document.getElementById('bottom-margin');
-bottomMargin.style.backgroundColor = lastColor.textContent;
+//bottomMargin.style.backgroundColor = lastColor.textContent;
 
 const addColorButton = document.getElementById('add-color-button');
 addColorButton.addEventListener('click', (event) => {
