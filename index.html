@@ -49,6 +49,12 @@ body {
     height: 100dvh;
 }
 
+#color-list{
+	display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
 #top-margin{
     height: var(--padding-top);
     background-color: red;
@@ -78,10 +84,13 @@ body {
 </head>
 <body>
 <div id="content-area">
-<div id="top-margin"></div>
-<div class="color">#00b43d</div>
-<div id="bottom-margin"></div>
-<button id="add-color-button">Add color</button>
+    <div id="top-margin"></div>
+    <div id="color-list">
+        <div class="color">#00b43d</div>
+        <div class="color">#333333</div>
+    </div>
+    <div id="bottom-margin"></div>
+    <button id="add-color-button">Add color</button>
 </div>
 
 <script>
@@ -101,7 +110,7 @@ addColorButton.addEventListener('click', (event) => {
     const newColor = document.createElement('div');
     newColor.classList.add('color');
     newColor.textContent = '#' + Math.floor(Math.random()*16777215).toString(16);
-    document.getElementById('content-area').insertBefore(newColor, addColorButton);
+    lastColor.insertAdjacentElement('afterend', newColor);
     updateColors();
 });
 
