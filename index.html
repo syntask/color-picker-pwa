@@ -19,8 +19,8 @@ html{
 }
 
 body {
-    height:100vh;
-    width: 100vw;
+    height:100dvh;
+    width: 100dvw;
 	margin: 0;
     padding: 0px;
 }
@@ -49,10 +49,12 @@ body {
 }
 
 #top-margin{
+    margin-top: calc(0px-var(--padding-top));
     height: var(--padding-top);
 }
 
 #bottom-margin{
+    margin-bottom: calc(0px-var(--padding-bottom));
     height: var(--padding-bottom);
 }
 
