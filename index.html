@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="initial-scale=1,user-scalable=no,viewport-fit=cover" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<title>Dynamic status bar color test</title>
+<style>
+:root {
+    --background-color: #aaaaaa;
+}
+body {
+    background-color: var(--background-color);
+}
+</style>
+</head>
+<body>
+<button id="red">Red</button>
+<button id="green">Green</button>
+<button id="blue">Blue</button>
+<script>
+const root = document.documentElement; 
+const red = document.getElementById('red');
+const green = document.getElementById('green');
+const blue = document.getElementById('blue');
+
+red.addEventListener('click', (event) => {
+    root.style.setProperty('--background-color', '#aa0000');
+});
+
+green.addEventListener('click', (event) => {
+    root.style.setProperty('--background-color', '#00aa00');
+});
+
+blue.addEventListener('click', (event) => {
+    root.style.setProperty('--background-color', '#0000aa');
+});
+</script>
+</body>
+</html>
