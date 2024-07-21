@@ -7,45 +7,63 @@
 <title>Dynamic status bar color test</title>
 <style>
 :root {
-    --background-color: #aaaaaa;
+    --default-color: #aaaaaa;
 }
+html{
+	padding: 0;
+    margin: 0;
+}
+
 body {
-    background-color: var(--background-color);
+    height:100dvh;
+    width: 100dvw;
+	margin: 0;
+    background-color: var(--default-color);
     padding-left: env(safe-area-inset-left);
     padding-right: env(safe-area-inset-right);
     padding-top: env(safe-area-inset-top);
     padding-bottom: env(safe-area-inset-bottom);
 }
 
-button {
-	font-size: 2em;
+.color {
+	background-color: #777;
+    color: #fff;
+    padding: 16px;
+    font-family: monospace;
+    font-size: 2em;
+    font-weight: bold;
+    flex-grow: 1;
+    transition: flex-grow 0.5s;
+}
+
+.content-area{
+	display: flex;
+    flex-direction: column;
+    height: 100%;
 }
 
 </style>
 </head>
 <body>
 <div class="content-area">
-<button id="red">Red</button>
-<button id="green">Green</button>
-<button id="blue">Blue</button>
+<div class="color">#aa0000</div>
+<div class="color">#00aa00</div>
+<div class="color">#0000aa</div>
 </div>
 
 <script>
 const root = document.documentElement; 
-const red = document.getElementById('red');
-const green = document.getElementById('green');
-const blue = document.getElementById('blue');
-
-red.addEventListener('click', (event) => {
-    root.style.setProperty('--background-color', '#aa0000');
-});
-
-green.addEventListener('click', (event) => {
-    root.style.setProperty('--background-color', '#00aa00');
-});
-
-blue.addEventListener('click', (event) => {
-    root.style.setProperty('--background-color', '#0000aa');
+var colors = document.querySelectorAll('.color');
+colors.forEach((color) => {
+    color.style.setProperty('cursor', 'pointer');
+    color.style.setProperty('background-color', color.textContent);
+    color.addEventListener('click', (event) => {
+        root.style.setProperty('--default-color', color.textContent);
+        colors.forEach((color) => {
+            color.style.setProperty('flex-grow', '1');
+        });
+        color.style.setProperty('flex-grow', '2');
+    });
 });
 </script>
 </body>
