@@ -51,12 +51,25 @@ body {
 
 #top-margin{
     height: var(--padding-top);
-    background-color: #f00;
 }
 
 #bottom-margin{
     height: var(--padding-bottom);
-    background-color: #00f;
+}
+
+#add-color-button{
+    position: fixed;
+    bottom: max(16px, env(safe-area-inset-bottom));
+    right: max(16px, env(safe-area-inset-right));
+    height: 50px;
+    background-color: white;
+    color: black;
+    font-size: 1.5em;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    padding: 0 16px;
+    border-radius: 999px;
 }
 
 </style>
@@ -64,26 +77,43 @@ body {
 <body>
 <div id="content-area">
 <div id="top-margin"></div>
-<div class="color">#cccc00</div>
-<div class="color">#00cccc</div>
-<div class="color">#cc00cc</div>
+<div class="color">#00b43d</div>
 <div id="bottom-margin"></div>
+<button id="add-color-button">Add color</button>
 </div>
 
 <script>
 const root = document.documentElement; 
 var colors = document.querySelectorAll('.color');
-colors.forEach((color) => {
-    color.style.setProperty('cursor', 'pointer');
-    color.style.setProperty('background-color', color.textContent);
-    color.addEventListener('click', (event) => {
-        root.style.setProperty('--default-color', color.textContent);
-        colors.forEach((color) => {
-            color.style.setProperty('flex-grow', '1');
-        });
-        color.style.setProperty('flex-grow', '3');
-    });
+
+const firstColor = colors[0];
+const topMargin = document.getElementById('top-margin');
+topMargin.style.backgroundColor = firstColor.textContent;
+
+const lastColor = colors[colors.length - 1];
+const bottomMargin = document.getElementById('bottom-margin');
+bottomMargin.style.backgroundColor = lastColor.textContent;
+
+const addColorButton = document.getElementById('add-color-button');
+addColorButton.addEventListener('click', (event) => {
+    const newColor = document.createElement('div');
+    newColor.classList.add('color');
+    newColor.textContent = '#' + Math.floor(Math.random()*16777215).toString(16);
+    document.getElementById('content-area').insertBefore(newColor, addColorButton);
+    updateColors();
 });
+
+function updateColors() {
+    colors = document.querySelectorAll('.color');
+    colors.forEach((color) => {
+        color.style.setProperty('background-color', color.textContent);
+        color.addEventListener('click', (event) => {
+            //TBD
+        });
+    });
+}
+
+updateColors();
 </script>
 </body>
 </html>
