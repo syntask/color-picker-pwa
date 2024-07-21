@@ -4,6 +4,7 @@
 <meta name="viewport" content="initial-scale=1,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no,width=device-width,viewport-fit=cover" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/nano.min.css" />
 <title>Dynamic status bar color test</title>
 <style>
 :root {
@@ -85,12 +86,13 @@ body {
 <div id="content-area">
     <div id="top-margin"></div>
     <div id="color-list">
-        <div class="color">#00b43d</div>
+        <div class="color">#00B43D</div>
     </div>
     <div id="bottom-margin"></div>
     <button id="add-color-button">Add color</button>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr"></script>
 <script>
 const root = document.documentElement; 
 let colors
@@ -104,7 +106,42 @@ function updateColors() {
     document.getElementById('top-margin').style.backgroundColor = firstColor.textContent;
     document.getElementById('bottom-margin').style.backgroundColor = lastColor.textContent;
     colors.forEach((color) => {
+
+        // Create a div inside the color div to hold the color picker but first ensure it doesn't already exist
+        if (!color.querySelector('.pickr')) {
+            const pickerElement = document.createElement('div');
+            color.appendChild(pickerElement);
+            const pickr = Pickr.create({
+                el: pickerElement,
+                theme: 'nano', // or 'classic', 'monolith', 'nano'
+                default: color.textContent,
+                components: {
+                    // Main components
+                    preview: true,
+                    opacity: true,
+                    hue: true,
+    
+                    // Input / output Options
+                    interaction: {
+                        hex: true,
+                        rgba: true,
+                        hsla: true,
+                        hsva: true,
+                        cmyk: true,
+                        input: true
+                    }
+                }
+            });
+            pickr.on('change', (colorIndex, instance) => {
+                color.textContent = colorIndex.toHEXA().toString();
+                color.style.setProperty('background-color', color.textContent);
+                color.style.setProperty('color', safeColor(color.textContent));
+                pickr.applyColor(true);
+            });
+        }
+
         color.style.setProperty('background-color', color.textContent);
+        color.style.setProperty('color', safeColor(color.textContent));
         color.addEventListener('click', (event) => {
             //TBD
         });
@@ -113,10 +150,31 @@ function updateColors() {
 
 updateColors();
 
+function safeColor(color) {
+    const r = parseInt(color.substr(1, 2), 16);
+    const g = parseInt(color.substr(3, 2), 16);
+    const b = parseInt(color.substr(5, 2), 16);
+    const brightness = Math.sqrt(0.299 * r * r + 0.587 * g * g + 0.114 * b * b);
+    if (brightness < 150) {
+        return '#ffffff';
+    } else {
+        return '#000000';
+    }
+}
+
+function generateRandomColor() {
+    let color = '#';
+    const characters = '0123456789ABCDEF';
+    for (let i = 0; i < 6; i++) {
+        color += characters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+}
+
 addColorButton.addEventListener('click', (event) => {
     const newColor = document.createElement('div');
     newColor.classList.add('color');
-    newColor.textContent = '#' + Math.floor(Math.random()*16777215).toString(16);
+    newColor.textContent = generateRandomColor();
     lastColor.insertAdjacentElement('afterend', newColor);
     newColor.style.setProperty('flex-grow', '0');
     newColor.style.setProperty('overflow', 'hidden');
@@ -130,6 +188,14 @@ addColorButton.addEventListener('click', (event) => {
         newColor.style.setProperty('flex-grow', '');
     }, 0);
     updateColors();
+});
+
+//reset #content-area height on orientation change
+window.addEventListener('orientationchange', () => {
+    document.getElementById('content-area').style.height = '100dvh';
+});
+window.addEventListener('resize', () => {
+    document.getElementById('content-area').style.height = '100dvh';
 });
 </script>
 </body>
