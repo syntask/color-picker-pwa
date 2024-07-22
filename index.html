@@ -42,7 +42,7 @@ body {
     font-weight: bold;
     line-height: 1;
     flex-grow: 1;
-    transition: flex-grow .5s, padding-top .5s, padding-bottom .25s, line-height .125s;
+    transition: flex-grow .5s, padding-top .5s, padding-bottom .25s, line-height .125s, height .5s;
     text-align: left;
 }
 
@@ -71,8 +71,8 @@ body {
 
 #add-color-button{
     position: fixed;
-    bottom: max(16px, env(safe-area-inset-bottom), env(safe-area-inset-right));
-    right: max(16px, env(safe-area-inset-bottom), env(safe-area-inset-right));
+    bottom: max(16px, env(safe-area-inset-bottom));
+    right: max(16px, env(safe-area-inset-right));
     background-color: white;
     color: black;
     border: none;
@@ -95,10 +95,11 @@ body {
 }
 
 .pcr-app {
-    top: max(env(safe-area-inset-top), 16px) !important;
+    margin-top: 16px !important;
     width: 100% !important;
     max-width: none !important;
-    background-color: white !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
 }
 
 .pcr-selection {
@@ -155,6 +156,10 @@ function updateColors() {
     addColorButton.style.setProperty('background-color', safeColor(lastColor.querySelector('.color-label').textContent));
     root.style.setProperty('--last-color', lastColor.querySelector('.color-label').textContent);
     document.body.style.setProperty('background-color', safeColor(firstColor.querySelector('.color-label').textContent));
+    colors.forEach((color) => {
+        color.style.setProperty('background-color', color.querySelector('.color-label').textContent);
+        color.style.setProperty('color', safeColor(color.querySelector('.color-label').textContent));
+    });
 }
 
 updateColors();
@@ -162,44 +167,66 @@ updateColors();
 function initializeColor(color){
     colorLabel = color.querySelector('.color-label');
 
+    color.style.setProperty('background-color', colorLabel.textContent);
+    color.style.setProperty('color', safeColor(colorLabel.textContent));
+    color.querySelector('.color-label').addEventListener('click', (event) => {
+        //Change the flex justify content to space-between
+        color.style.setProperty('justify-content', 'space-between');
+
+
     // Create a div inside the color div to hold the color picker but first ensure it doesn't already exist
     if (!color.querySelector('.pickr')) {
+        //Create the div before any other elements in the color div
         const pickerElement = document.createElement('div');
-        color.appendChild(pickerElement);
+        color.insertBefore(pickerElement, color.firstChild);
         const pickr = Pickr.create({
             el: pickerElement,
             theme: 'nano', // or 'classic', 'monolith', 'nano'
             default: colorLabel.textContent,
+            inline: true,
+            container: 'body',
             components: {
                 // Main components
                 preview: true,
-                opacity: true,
+                opacity: false,
                 hue: true,
 
                 // Input / output Options
                 interaction: {
-                    hex: true,
-                    rgba: true,
-                    hsla: true,
-                    hsva: true,
-                    cmyk: true,
-                    input: true,
-                    save: true
+                    //hex: true,
+                    //rgba: true,
+                    //hsla: true,
+                    //hsva: true,
+                    //cmyk: true,
+                    //input: true,
+                    //save: true
                 }
             }
         });
+        pickerElement.style.setProperty('display', 'none');
         pickr.on('change', (colorIndex, instance) => {
             color.querySelector('.color-label').textContent = colorIndex.toHEXA().toString();
-            color.style.setProperty('background-color', color.textContent);
-            color.style.setProperty('color', safeColor(color.textContent));
             pickr.applyColor(true);
             updateColors();
         });
+
+        pickr.on('hide', (colorIndex, instance) => {
+            //delete any chlidren of the color div that are class .pickr or .pcr-app
+            color.querySelectorAll('.pickr, .pcr-app').forEach((element) => {
+                element.remove();
+                color.style.setProperty('justify-content', 'flex-end');
+            });
+        });
+
+        pickr.on('save', (colorIndex, instance) => {
+            //delete any chlidren of the color div that are class .pickr or .pcr-app
+            color.querySelectorAll('.pickr, .pcr-app').forEach((element) => {
+                element.remove();
+                color.style.setProperty('justify-content', 'flex-end');
+            });
+        });
     }
 
-    color.style.setProperty('background-color', colorLabel.textContent);
-    color.style.setProperty('color', safeColor(colorLabel.textContent));
-    color.querySelector('.color-label').addEventListener('click', (event) => {
         // Simulate a click on the color picker
         color.querySelector('.pcr-button').click();
     });
