@@ -9,7 +9,7 @@
 <title>Color</title>
 <style>
 :root {
-    --default-color: #aaaaaa;
+    --last-color: #ffffff;
     --padding-left: max(env(safe-area-inset-left),16px);
     --padding-right: max(env(safe-area-inset-right),16px);
     --padding-top: env(safe-area-inset-top);
@@ -33,10 +33,10 @@ body {
     flex-direction: column;
     justify-content: flex-end;
     color: #fff;
-    padding-left: var(--padding-left);
-    padding-right: var(--padding-right);
-    padding-top: 16px;
-    padding-bottom: 16px;
+    padding-left: max(env(safe-area-inset-left),16px);
+    padding-right: max(env(safe-area-inset-right),16px);
+    padding-top: max(env(safe-area-inset-top),16px);
+    padding-bottom: max(env(safe-area-inset-bottom),16px);
     font-family: monospace;
     font-size: 2em;
     font-weight: bold;
@@ -60,26 +60,34 @@ body {
 }
 
 #top-margin{
-    height: var(--padding-top);
+    /*height: env(safe-area-inset-top);*/
+    height: 0;
 }
 
 #bottom-margin{
-    height: var(--padding-bottom);
+    /*height: env(safe-area-inset-bottom);*/
+    height: 0;
 }
 
 #add-color-button{
     position: fixed;
-    bottom: max(16px, env(safe-area-inset-bottom));
-    right: max(16px, env(safe-area-inset-right));
-    height: 50px;
+    bottom: max(16px, env(safe-area-inset-bottom), env(safe-area-inset-right));
+    right: max(16px, env(safe-area-inset-bottom), env(safe-area-inset-right));
     background-color: white;
     color: black;
-    font-size: 1.5em;
-    font-weight: bold;
     border: none;
     cursor: pointer;
-    padding: 0 16px;
+    height: 60px;
+    width: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     border-radius: 999px;
+    transition: background-color .25s;
+}
+
+#add-color-button svg path {
+    transition: fill 0.25s; 
 }
 
 .pickr {
@@ -118,7 +126,15 @@ body {
 
     </div>
     <div id="bottom-margin"></div>
-    <button id="add-color-button">Add color</button>
+    
+    <button id="add-color-button">
+        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 17.1191 16.7578" height="25px" width="25px">
+            <g>
+             <rect height="16.7578" opacity="0" width="17.1191" x="0" y="0"/>
+             <path d="M0 8.37891C0 9.19434 0.664062 9.8584 1.47949 9.8584L6.9043 9.8584L6.9043 15.2832C6.9043 16.0938 7.56348 16.7578 8.37891 16.7578C9.19434 16.7578 9.86328 16.0938 9.86328 15.2832L9.86328 9.8584L15.2832 9.8584C16.0938 9.8584 16.7578 9.19434 16.7578 8.37891C16.7578 7.56348 16.0938 6.89453 15.2832 6.89453L9.86328 6.89453L9.86328 1.47949C9.86328 0.664062 9.19434 0 8.37891 0C7.56348 0 6.9043 0.664062 6.9043 1.47949L6.9043 6.89453L1.47949 6.89453C0.664062 6.89453 0 7.56348 0 8.37891Z" fill="var(--last-color)" fill-opacity="1"/>
+            </g>
+        </svg>
+    </button>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr"></script>
@@ -136,6 +152,9 @@ function updateColors() {
     lastColor = colors[colors.length - 1];
     document.getElementById('top-margin').style.backgroundColor = firstColor.querySelector('.color-label').textContent;
     document.getElementById('bottom-margin').style.backgroundColor = lastColor.querySelector('.color-label').textContent;
+    addColorButton.style.setProperty('background-color', safeColor(lastColor.querySelector('.color-label').textContent));
+    root.style.setProperty('--last-color', lastColor.querySelector('.color-label').textContent);
+    document.body.style.setProperty('background-color', safeColor(firstColor.querySelector('.color-label').textContent));
 }
 
 updateColors();
@@ -191,10 +210,20 @@ function safeColor(color) {
     const g = parseInt(color.substr(3, 2), 16);
     const b = parseInt(color.substr(5, 2), 16);
     const brightness = Math.sqrt(0.299 * r * r + 0.587 * g * g + 0.114 * b * b);
-    if (brightness < 150) {
-        return '#ffffff';
+    if (brightness < 128) {
+        // A function that returns a lighter version of the input color
+        const factor = .5; // adjust this value to control the lightness
+        const newR = Math.floor(r + (255 - r) * factor);
+        const newG = Math.floor(g + (255 - g) * factor);
+        const newB = Math.floor(b + (255 - b) * factor);
+        return `#${newR.toString(16).padStart(2, '0')}${newG.toString(16).padStart(2, '0')}${newB.toString(16).padStart(2, '0')}`;
     } else {
-        return '#000000';
+        // A function that returns a darker version of the input color
+        const factor = .5; // adjust this value to control the darkness
+        const newR = Math.floor(r * factor);
+        const newG = Math.floor(g * factor);
+        const newB = Math.floor(b * factor);
+        return `#${newR.toString(16).padStart(2, '0')}${newG.toString(16).padStart(2, '0')}${newB.toString(16).padStart(2, '0')}`;
     }
 }
 
