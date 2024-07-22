@@ -54,6 +54,7 @@ body {
 #color-list{
 	display: flex;
     flex-direction: column;
+    justify-content: flex-end;
     flex-grow: 1;
 }
 
@@ -80,13 +81,40 @@ body {
     border-radius: 999px;
 }
 
+.pickr {
+    display: none;
+}
+
+.pcr-app {
+    width: 100% !important;
+    max-width: none !important;
+    height: 400px !important;
+    background-color: white !important;
+}
+
+.pcr-selection {
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+.pcr-color-preview {
+    display: none !important;
+}
+
+.pcr-color-chooser {
+    width: 100% !important;
+}
+
+.pcr-color-opacity {
+    width: 100% !important;
+}
 </style>
 </head>
 <body>
 <div id="content-area">
     <div id="top-margin"></div>
     <div id="color-list">
-        <div class="color">#00B43D</div>
+
     </div>
     <div id="bottom-margin"></div>
     <button id="add-color-button">Add color</button>
@@ -99,56 +127,62 @@ let colors
 let lastColor
 const addColorButton = document.getElementById('add-color-button');
 
+addColor();
+
 function updateColors() {
     colors = document.querySelectorAll('.color');
     firstColor = colors[0];
     lastColor = colors[colors.length - 1];
-    document.getElementById('top-margin').style.backgroundColor = firstColor.textContent;
-    document.getElementById('bottom-margin').style.backgroundColor = lastColor.textContent;
-    colors.forEach((color) => {
-
-        // Create a div inside the color div to hold the color picker but first ensure it doesn't already exist
-        if (!color.querySelector('.pickr')) {
-            const pickerElement = document.createElement('div');
-            color.appendChild(pickerElement);
-            const pickr = Pickr.create({
-                el: pickerElement,
-                theme: 'nano', // or 'classic', 'monolith', 'nano'
-                default: color.textContent,
-                components: {
-                    // Main components
-                    preview: true,
-                    opacity: true,
-                    hue: true,
-    
-                    // Input / output Options
-                    interaction: {
-                        hex: true,
-                        rgba: true,
-                        hsla: true,
-                        hsva: true,
-                        cmyk: true,
-                        input: true
-                    }
-                }
-            });
-            pickr.on('change', (colorIndex, instance) => {
-                color.textContent = colorIndex.toHEXA().toString();
-                color.style.setProperty('background-color', color.textContent);
-                color.style.setProperty('color', safeColor(color.textContent));
-                pickr.applyColor(true);
-            });
-        }
-
-        color.style.setProperty('background-color', color.textContent);
-        color.style.setProperty('color', safeColor(color.textContent));
-        color.addEventListener('click', (event) => {
-            //TBD
-        });
-    });
+    document.getElementById('top-margin').style.backgroundColor = firstColor.querySelector('.color-label').textContent;
+    document.getElementById('bottom-margin').style.backgroundColor = lastColor.querySelector('.color-label').textContent;
 }
 
 updateColors();
+
+function initializeColor(color){
+    colorLabel = color.querySelector('.color-label');
+
+    // Create a div inside the color div to hold the color picker but first ensure it doesn't already exist
+    if (!color.querySelector('.pickr')) {
+        const pickerElement = document.createElement('div');
+        color.appendChild(pickerElement);
+        const pickr = Pickr.create({
+            el: pickerElement,
+            theme: 'nano', // or 'classic', 'monolith', 'nano'
+            default: colorLabel.textContent,
+            components: {
+                // Main components
+                preview: true,
+                opacity: true,
+                hue: true,
+
+                // Input / output Options
+                interaction: {
+                    hex: true,
+                    rgba: true,
+                    hsla: true,
+                    hsva: true,
+                    cmyk: true,
+                    input: true,
+                    save: true
+                }
+            }
+        });
+        pickr.on('change', (colorIndex, instance) => {
+            color.querySelector('.color-label').textContent = colorIndex.toHEXA().toString();
+            color.style.setProperty('background-color', color.textContent);
+            color.style.setProperty('color', safeColor(color.textContent));
+            pickr.applyColor(true);
+        });
+    }
+
+    color.style.setProperty('background-color', colorLabel.textContent);
+    color.style.setProperty('color', safeColor(colorLabel.textContent));
+    color.querySelector('.color-label').addEventListener('click', (event) => {
+        // Simulate a click on the color picker
+        color.querySelector('.pcr-button').click();
+    });
+}
 
 function safeColor(color) {
     const r = parseInt(color.substr(1, 2), 16);
@@ -171,11 +205,15 @@ function generateRandomColor() {
     return color;
 }
 
-addColorButton.addEventListener('click', (event) => {
+function addColor() {
     const newColor = document.createElement('div');
+    const newColorLabel = document.createElement('div');
     newColor.classList.add('color');
-    newColor.textContent = generateRandomColor();
-    lastColor.insertAdjacentElement('afterend', newColor);
+    newColorLabel.classList.add('color-label');
+    newColorLabel.textContent = generateRandomColor();
+    document.getElementById('color-list').appendChild(newColor);
+    newColor.appendChild(newColorLabel);
+    initializeColor(newColor);
     newColor.style.setProperty('flex-grow', '0');
     newColor.style.setProperty('overflow', 'hidden');
     newColor.style.setProperty('padding-top', '0');
@@ -187,6 +225,10 @@ addColorButton.addEventListener('click', (event) => {
         newColor.style.setProperty('padding-bottom', '');
         newColor.style.setProperty('flex-grow', '');
     }, 0);
+}
+
+addColorButton.addEventListener('click', (event) => {
+    addColor();
     updateColors();
 });
 
