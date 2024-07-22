@@ -173,6 +173,7 @@ function initializeColor(color){
             color.style.setProperty('background-color', color.textContent);
             color.style.setProperty('color', safeColor(color.textContent));
             pickr.applyColor(true);
+            updateColors();
         });
     }
 
