@@ -182,7 +182,7 @@ function initializeColor(color){
         const pickr = Pickr.create({
             el: pickerElement,
             theme: 'nano', // or 'classic', 'monolith', 'nano'
-            default: colorLabel.textContent,
+            default: color.querySelector('.color-label').textContent,
             inline: true,
             container: 'body',
             components: {
